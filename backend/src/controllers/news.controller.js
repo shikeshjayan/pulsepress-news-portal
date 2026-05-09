@@ -2,8 +2,16 @@ import News from "../models/News.model.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 // Create News
 export const createNews = asyncHandler(async (req, res) => {
-  const { title, category, summary, content, imageUrl, status, scheduledAt } =
-    req.body;
+  const {
+    title,
+    category,
+    summary,
+    content,
+    imageUrl,
+    status,
+    scheduledAt,
+    author,
+  } = req.body;
   if (!title || !category || !summary || !content || !imageUrl) {
     return res
       .status(400)
@@ -15,7 +23,10 @@ export const createNews = asyncHandler(async (req, res) => {
       .status(400)
       .json({ success: false, message: "News with this title already exists" });
   }
-
+  let publishedAt = null;
+  if (status === "published") {
+    publishedAt = new Date();
+  }
   const news = await News.create({
     title,
     category,
@@ -24,6 +35,8 @@ export const createNews = asyncHandler(async (req, res) => {
     imageUrl,
     status,
     scheduledAt,
+    publishedAt,
+    author,
   });
   res
     .status(201)
@@ -31,13 +44,18 @@ export const createNews = asyncHandler(async (req, res) => {
 });
 //  Get All News
 export const getAllNews = asyncHandler(async (req, res) => {
-  const newsList = await News.find().sort({ createdAt: -1 }).lean();
+  const limit = parseInt(req.query.limit) || 0;
+  const sort = req.query.sort === "asc" ? 1 : -1;
+  const newsList = await News.find({ status: "published" })
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .lean();
   res.status(200).json({ success: true, data: newsList });
 });
 // Get News by Slug
 export const getNewsBySlug = asyncHandler(async (req, res) => {
   const slug = req.params.slug;
-  const news = await News.findOne({ slug }).lean();
+  const news = await News.findOne({ slug, status: "published" }).lean();
   if (!news) {
     return res.status(404).json({ success: false, message: "News not found" });
   }
@@ -46,13 +64,15 @@ export const getNewsBySlug = asyncHandler(async (req, res) => {
 // Get News By Category
 export const getNewsByCategory = asyncHandler(async (req, res) => {
   const category = req.params.category;
-  const newsList = await News.find({ category }).sort({ createdAt: -1 }).lean();
+  const newsList = await News.find({ category, status: "published" })
+    .sort({ createdAt: -1 })
+    .lean();
   res.status(200).json({ success: true, data: newsList });
 });
 //  Update News
 export const updateNews = asyncHandler(async (req, res) => {
   const news = await News.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   }).lean();
   if (!news) {

@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 //  Register
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-  const existingUser = await User.findOne({ email }).lean();
+  const existingUser = await User.findOne({ email: email.toLowerCase() }).lean();
   if (existingUser) {
     return res.status(400).json({ message: "Email already in use" });
   }
@@ -21,7 +21,7 @@ export const register = asyncHandler(async (req, res) => {
 //  Login
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }).select("+password").lean();
+  const user = await User.findOne({ email: email.toLowerCase() }).select("+password").lean();
   if (!user) {
     return res.status(400).json({ message: "Invalid email or password" });
   }
@@ -37,7 +37,8 @@ export const login = asyncHandler(async (req, res) => {
     sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
   });
-  res.json({ success: true, message: "Login successful", token });
+  const userData = await User.findById(user._id).select("-password").lean();
+  res.json({ success: true, message: "Login successful", token, user: userData });
 });
 //  getProfile
 export const getProfile = asyncHandler(async (req, res) => {

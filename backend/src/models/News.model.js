@@ -62,8 +62,8 @@ const newsSchema = new mongoose.Schema(
     },
 
     author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
+      trim: true,
     },
   },
   {

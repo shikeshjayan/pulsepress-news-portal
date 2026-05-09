@@ -13,8 +13,8 @@ const router = express.Router();
 
 router.post("/", authMiddleware, createNews);
 router.get("/", getAllNews);
-router.get("/:slug", getNewsBySlug);
 router.get("/category/:category", getNewsByCategory);
+router.get("/:slug", getNewsBySlug);
 router.put("/:id", authMiddleware, updateNews);
 router.delete("/:id", authMiddleware, deleteNews);
 
