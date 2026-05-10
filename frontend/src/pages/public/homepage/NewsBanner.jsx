@@ -13,12 +13,12 @@ const formatDate = (dateStr) => {
 };
 
 const FALLBACK_NEWS = {
-  title: "Global Tech Summit 2026 Unveils Revolutionary AI Breakthroughs",
-  category: "technology",
-  summary: "Industry leaders and innovators gathered in San Francisco...",
-  author: "Sarah Chen",
-  date: "May 8, 2026",
-  imageUrl: "https://placehold.co/1600x900/1e293b/ffffff?text=Tech+Summit+2026",
+  title: "No news available",
+  category: "general",
+  summary: "Check back later for the latest updates.",
+  author: "PulsePress",
+  date: "",
+  imageUrl: "/placeholder.jpg",
 };
 
 const NewsBanner = () => {
@@ -48,6 +48,7 @@ const NewsBanner = () => {
       <img
         src={featured.imageUrl}
         alt={featured.title}
+        loading="lazy"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
@@ -90,6 +91,7 @@ const BannerFallback = ({ news }) => (
     <img
       src={news.imageUrl}
       alt={news.title}
+      loading="lazy"
       className="absolute inset-0 w-full h-full object-cover"
     />
     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />

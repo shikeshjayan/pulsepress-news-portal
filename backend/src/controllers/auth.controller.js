@@ -5,6 +5,12 @@ import jwt from "jsonwebtoken";
 //  Register
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ message: "Valid email is required" });
+  }
+  if (!password || password.length < 6) {
+    return res.status(400).json({ message: "Password must be at least 6 characters" });
+  }
   const existingUser = await User.findOne({ email: email.toLowerCase() }).lean();
   if (existingUser) {
     return res.status(400).json({ message: "Email already in use" });
@@ -29,7 +35,7 @@ export const login = asyncHandler(async (req, res) => {
   if (!isMatch) {
     return res.status(400).json({ message: "Invalid email or password" });
   }
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
   res.cookie("token", token, {

@@ -1,73 +1,5 @@
 import { Link } from "react-router-dom";
 import { useNews } from "../../../hooks/useNews";
-import { useMemo } from "react";
-
-const FALLBACK_NEWS = [
-  {
-    slug: "global-tech-summit-2026",
-    title: "Global Tech Summit 2026 Unveils Revolutionary AI Breakthroughs",
-    category: "technology",
-    summary:
-      "Industry leaders and innovators gathered in San Francisco to showcase cutting-edge advancements in artificial intelligence.",
-    author: "Sarah Chen",
-    date: "May 8, 2026",
-    imageUrl: "https://placehold.co/800x500/1e293b/ffffff?text=Tech+Summit",
-  },
-  {
-    slug: "climate-research-breakthrough",
-    title:
-      "New Climate Research Reveals Promising Path to Carbon Neutrality by 2040",
-    category: "science",
-    summary:
-      "A groundbreaking study published in Nature outlines achievable strategies for reaching net-zero emissions within two decades.",
-    author: "Marcus Williams",
-    date: "May 7, 2026",
-    imageUrl:
-      "https://placehold.co/800x500/065f46/ffffff?text=Climate+Research",
-  },
-  {
-    slug: "financial-markets-weekly",
-    title: "Global Markets Rally as Central Banks Signal Steady Interest Rates",
-    category: "business",
-    summary:
-      "Stock indices worldwide posted gains following coordinated statements from major central banks regarding monetary policy.",
-    author: "Elena Rodriguez",
-    date: "May 7, 2026",
-    imageUrl: "https://placehold.co/800x500/7c2d12/ffffff?text=Markets",
-  },
-  {
-    slug: "health-wellness-2026",
-    title:
-      "Revolutionary Gene Therapy Trial Shows 90% Success Rate in Treating Rare Diseases",
-    category: "health",
-    summary:
-      "The FDA has fast-tracked approval for a new gene therapy that could transform treatment for millions of patients worldwide.",
-    author: "Dr. James Park",
-    date: "May 6, 2026",
-    imageUrl: "https://placehold.co/800x500/831843/ffffff?text=Gene+Therapy",
-  },
-  {
-    slug: "olympic-preparations",
-    title: "Summer Olympics 2026: Host City Reveals State-of-the-Art Venues",
-    category: "sports",
-    summary:
-      "With just months until the opening ceremony, the host city has unveiled impressive venues built with sustainability at their core.",
-    author: "Alex Thompson",
-    date: "May 6, 2026",
-    imageUrl: "https://placehold.co/800x500/1e3a5f/ffffff?text=Olympics",
-  },
-  {
-    slug: "space-exploration-mission",
-    title:
-      "NASA's Artemis III Mission Successfully Establishes Lunar Research Base",
-    category: "technology",
-    summary:
-      "Astronauts have completed the first phase of construction on a permanent lunar habitat, marking a new chapter in space exploration.",
-    author: "Sarah Chen",
-    date: "May 5, 2026",
-    imageUrl: "https://placehold.co/800x500/312e81/ffffff?text=Lunar+Base",
-  },
-];
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
@@ -80,8 +12,33 @@ const formatDate = (dateStr) => {
   });
 };
 
+const GridSkeleton = () => (
+  <section className="max-w-7xl mx-auto px-4 py-12">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="bg-white rounded-xl overflow-hidden shadow-md">
+          <div className="h-48 bg-gray-200 animate-pulse" />
+          <div className="p-5 space-y-3">
+            <div className="h-4 bg-gray-200 animate-pulse rounded w-3/4" />
+            <div className="h-4 bg-gray-200 animate-pulse rounded w-full" />
+            <div className="h-4 bg-gray-200 animate-pulse rounded w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
 const NewsGrid = () => {
   const { news, loading, error } = useNews();
+
+  if (loading) return <GridSkeleton />;
+  if (error)
+    return (
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <p className="text-center text-red-500">Failed to load news.</p>
+      </section>
+    );
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
@@ -109,6 +66,7 @@ const NewsGrid = () => {
                 <img
                   src={article.imageUrl}
                   alt={article.title}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <span className="absolute top-3 left-3 px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-red-600 text-white rounded-full">

@@ -15,6 +15,7 @@ const categories = [
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
+
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -66,15 +67,15 @@ const Navbar = () => {
               <div className="flex items-center gap-2 ml-4">
                 <Link
                   to="/admin"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
-                  Admin
+                  className="px-3 py-2 rounded-md text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors">
+                  {user?.name || "Admin"}
                 </Link>
-                <span className="text-sm text-gray-500">{user?.name}</span>
-                <button
+                {/* <span className="text-sm text-gray-500">{user?.name}</span> */}
+                {/* <button
                   onClick={handleLogout}
                   className="px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
                   Logout
-                </button>
+                </button> */}
               </div>
             ) : (
               <button

@@ -72,7 +72,7 @@ const newsSchema = new mongoose.Schema(
 );
 
 newsSchema.pre("validate", function () {
-  if (this.title && !this.slug) {
+  if (this.title) {
     this.slug = this.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
