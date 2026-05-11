@@ -99,7 +99,7 @@ npm run dev
 
 1. Visit the app and click **Login** in the navbar
 2. Email - admin@pulsepress.com
-3. Password - admin@123
+3. Password - Admin@123
 
 ## API Endpoints
 
