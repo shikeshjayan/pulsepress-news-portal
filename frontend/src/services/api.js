@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://pulsepress-news-portal.onrender.com",
+  baseURL: import.meta.env.VITE_BASE_URL || "http://localhost:5000/api",
   withCredentials: true,
 });
 
