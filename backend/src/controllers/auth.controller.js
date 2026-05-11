@@ -45,7 +45,7 @@ export const login = asyncHandler(async (req, res) => {
   // httpOnly cookie = not readable by JS; SameSite=strict prevents CSRF
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     secure: process.env.NODE_ENV === "production",
   });
   const userData = await User.findById(user._id).select("-password").lean();
@@ -67,7 +67,7 @@ export const getProfile = asyncHandler(async (req, res) => {
 export const logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     secure: process.env.NODE_ENV === "production",
   });
   res.json({ success: true, message: "Logout successful" });

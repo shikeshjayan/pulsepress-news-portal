@@ -28,23 +28,27 @@ export const fetchAllNews = async (config = {}) => {
 };
 
 // PUBLIC: Fetch a single published article by its slug
-export const fetchNewsBySlug = async (slug) => {
+export const fetchNewsBySlug = async (slug, config = {}) => {
   try {
-    const response = await api.get(`/news/${slug}`);
+    const response = await api.get(`/news/${slug}`, config);
     return response.data;
   } catch (error) {
-    console.error("Error fetching news by slug:", error);
+    if (error.name !== "CanceledError") {
+      console.error("Error fetching news by slug:", error);
+    }
     throw error;
   }
 };
 
 // PUBLIC: Fetch published articles for a specific category
-export const fetchNewsByCategory = async (categoryId) => {
+export const fetchNewsByCategory = async (categoryId, config = {}) => {
   try {
-    const response = await api.get(`/news/category/${categoryId}`);
+    const response = await api.get(`/news/category/${categoryId}`, config);
     return response.data;
   } catch (error) {
-    console.error("Error fetching news by category:", error);
+    if (error.name !== "CanceledError") {
+      console.error("Error fetching news by category:", error);
+    }
     throw error;
   }
 };
