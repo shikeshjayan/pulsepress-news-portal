@@ -10,7 +10,7 @@ const FALLBACK_NEWS = {
   summary: "Check back later for the latest updates.",
   author: "PulsePress",
   date: "",
-  imageUrl: "/placeholder.jpg",
+  imageUrl: "https://placehold.co/1200x800",
 };
 
 const NewsBanner = () => {
@@ -50,6 +50,10 @@ const NewsBanner = () => {
         alt={featured.title}
         loading="lazy"
         onLoad={() => setBannerLoaded(true)}
+        unError={(e) => {
+          e.target.unerror = null;
+          e.target.src = "https://placehold.co/1200x800";
+        }}
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${bannerLoaded ? "opacity-100" : "opacity-0"}`}
       />
 

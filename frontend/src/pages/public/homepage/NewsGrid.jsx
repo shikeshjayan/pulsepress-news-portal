@@ -28,7 +28,9 @@ const NewsGrid = () => {
   if (loading) return <GridSkeleton />;
   if (error)
     return (
-    <section aria-label="Latest news" className="max-w-7xl mx-auto px-4 py-12">
+      <section
+        aria-label="Latest news"
+        className="max-w-7xl mx-auto px-4 py-12">
         <p className="text-center text-red-500">Failed to load news.</p>
       </section>
     );
@@ -64,8 +66,14 @@ const NewsGrid = () => {
                   alt={article.title}
                   loading="lazy"
                   onLoad={() =>
-                    setLoadedImages((prev) => new Set(prev).add(article.imageUrl))
+                    setLoadedImages((prev) =>
+                      new Set(prev).add(article.imageUrl),
+                    )
                   }
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://placehold.co/600x400";
+                  }}
                   className={`w-full h-full object-cover group-hover:scale-105 transition-opacity duration-300 ${loadedImages.has(article.imageUrl) ? "opacity-100" : "opacity-0"}`}
                 />
                 <span className="absolute top-3 left-3 px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-red-600 text-white rounded-full">
