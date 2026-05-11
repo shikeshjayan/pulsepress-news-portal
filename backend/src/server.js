@@ -13,7 +13,7 @@ const app = express();
 // Allow credentials (cookies) from the Vite dev server origin
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://pulsepress-news-portal.vercel.app",
     credentials: true,
   }),
 );
