@@ -1,3 +1,4 @@
+// Home page — hero banner + latest news grid
 import NewsBanner from "./homepage/NewsBanner";
 import NewsGrid from "./homepage/NewsGrid";
 

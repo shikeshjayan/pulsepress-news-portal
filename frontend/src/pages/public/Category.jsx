@@ -1,28 +1,28 @@
+// Public category page — filters news from global context by URL param, with pagination
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNews } from "../../hooks/useNews";
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import Pagination from "../../components/Pagination";
+import { formatDate } from "../../utils/formatDate";
 
 const Category = () => {
-  const { id } = useParams();
+  const { category } = useParams();
   const { news, loading, error } = useNews();
+  const [loadedImages, setLoadedImages] = useState(() => new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setLoadedImages(new Set());
+  }, [category]);
 
   if (loading) return <p className="text-gray-500 max-w-7xl mx-auto px-4 py-12">Loading...</p>;
   if (error) return <p className="text-red-500 max-w-7xl mx-auto px-4 py-12">{error}</p>;
 
-  const categoryLabel = id ? id.charAt(0).toUpperCase() + id.slice(1) : "All";
-  const filtered = id
-    ? news.filter((article) => article.category === id)
-    : news;
+  const isAll = category === "all" || !category;
+  const categoryLabel = isAll ? "All" : category.charAt(0).toUpperCase() + category.slice(1);
+  const filtered = isAll ? news : news.filter((article) => article.category.toLowerCase() === category.toLowerCase());
 
   if (filtered.length === 0) {
     return (
@@ -35,6 +35,11 @@ const Category = () => {
     );
   }
 
+  const sorted = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const totalPages = Math.ceil(sorted.length / itemsPerPage);
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedNews = sorted.slice((safePage - 1) * itemsPerPage, safePage * itemsPerPage);
+
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-8">
@@ -44,19 +49,23 @@ const Category = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .map((article) => (
+        {paginatedNews.map((article) => (
             <Link
               key={article.slug}
               to={`/news/${article.slug}`}
               className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-48 overflow-hidden bg-gray-200">
+                {!loadedImages.has(article.imageUrl) && (
+                  <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                )}
                 <img
                   src={article.imageUrl}
                   alt={article.title}
                   loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onLoad={() =>
+                    setLoadedImages((prev) => new Set(prev).add(article.imageUrl))
+                  }
+                  className={`w-full h-full object-cover group-hover:scale-105 transition-opacity duration-300 ${loadedImages.has(article.imageUrl) ? "opacity-100" : "opacity-0"}`}
                 />
                 <span className="absolute top-3 left-3 px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-red-600 text-white rounded-full">
                   {article.category}
@@ -83,6 +92,12 @@ const Category = () => {
             </Link>
           ))}
       </div>
+
+      <Pagination
+        currentPage={safePage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </section>
   );
 };

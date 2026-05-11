@@ -1,3 +1,4 @@
+// Manages authentication state globally — checks for an existing session on mount
 import { createContext, useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 
@@ -7,6 +8,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // On mount, check if the user already has a valid session via the JWT cookie
   useEffect(() => {
     api
       .get("/auth/profile")

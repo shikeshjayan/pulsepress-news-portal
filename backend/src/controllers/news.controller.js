@@ -1,6 +1,7 @@
 import News from "../models/News.model.js";
-import asyncHandler from "../middlewares/asyncHandler.js";
-//  Get All News
+import asyncHandler from "../middleware/asyncHandler.js";
+
+// PUBLIC: Return all published news, newest first. Optional ?limit=N query param.
 export const getAllNews = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit) || 0;
   const newsList = await News.find({ status: "published" })
@@ -9,7 +10,8 @@ export const getAllNews = asyncHandler(async (req, res) => {
     .lean();
   res.status(200).json({ success: true, data: newsList });
 });
-// Get News by Slug
+
+// PUBLIC: Return a single published article by its URL slug
 export const getNewsBySlug = asyncHandler(async (req, res) => {
   const slug = req.params.slug;
   const news = await News.findOne({ slug, status: "published" }).lean();
@@ -18,7 +20,8 @@ export const getNewsBySlug = asyncHandler(async (req, res) => {
   }
   res.status(200).json({ success: true, data: news });
 });
-// Get News By Category
+
+// PUBLIC: Return all published articles for a given category
 export const getNewsByCategory = asyncHandler(async (req, res) => {
   const category = req.params.category;
   const newsList = await News.find({ category, status: "published" })

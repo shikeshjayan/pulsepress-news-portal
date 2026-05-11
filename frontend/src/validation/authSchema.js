@@ -1,3 +1,4 @@
+// Yup validation schemas for authentication forms (register, login, change password)
 import * as yup from "yup";
 const nameRule = yup
   .string()
@@ -5,7 +6,7 @@ const nameRule = yup
   .required("Name is required")
   .min(3, "Name must be at least 3 characters")
   .max(30, "Name must be less than 30 characters")
-  .matches(/^[A-Za-z ]+$/, "Name can only contain letters and spaces"); // optional, stricter
+  .matches(/^[A-Za-z ]+$/, "Name can only contain letters and spaces");
 
 const emailRule = yup
   .string()
@@ -18,12 +19,12 @@ const passwordRule = yup
   .trim()
   .required("Password is required")
   .min(6, "Password must be at least 6 characters")
-  .max(50, "Password must be less than 50 characters") // optional max length
+  .max(50, "Password must be less than 50 characters")
   .matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/,
     "Password must contain uppercase, lowercase, number, and special character",
   );
-// --- Added Admin Key Rule ---
+
 const adminKeyRule = yup.string().trim().ensure();
 
 // Register schema (formerly signup)
@@ -36,7 +37,7 @@ export const registerSchema = yup.object({
     .trim()
     .required("Confirm password is required")
     .oneOf([yup.ref("password")], "Passwords do not match"),
-  adminkey: adminKeyRule,
+  adminKey: adminKeyRule,
 });
 
 // Login schema (formerly signin)
@@ -48,4 +49,19 @@ export const loginSchema = yup.object({
     .required("Password is required")
     .min(6, "Password must be at least 6 characters")
     .max(50, "Password must be less than 50 characters"),
+});
+
+export const changePasswordSchema = yup.object({
+  currentPassword: yup
+    .string()
+    .trim()
+    .required("Current password is required")
+    .min(6, "Password must be at least 6 characters")
+    .max(50, "Password must be less than 50 characters"),
+  newPassword: passwordRule,
+  confirmNewPassword: yup
+    .string()
+    .trim()
+    .required("Confirm new password is required")
+    .oneOf([yup.ref("newPassword")], "Passwords do not match"),
 });

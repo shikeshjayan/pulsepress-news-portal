@@ -1,3 +1,4 @@
+// Root component — AuthProvider wraps all routes so auth state is available everywhere
 import AuthProvider from "./context/AuthContext";
 import AppRoutes from "./routes/AppRoutes";
 

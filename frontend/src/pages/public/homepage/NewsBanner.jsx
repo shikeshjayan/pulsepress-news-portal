@@ -1,16 +1,8 @@
+// Hero banner — auto-rotates through the latest news every 5 seconds with a fallback
 import { useEffect, useMemo, useState } from "react";
 import { useNews } from "../../../hooks/useNews";
 import { Link } from "react-router-dom";
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import { formatDate } from "../../../utils/formatDate";
 
 const FALLBACK_NEWS = {
   title: "No news available",
@@ -24,11 +16,14 @@ const FALLBACK_NEWS = {
 const NewsBanner = () => {
   const { news, loading, error } = useNews();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [bannerLoaded, setBannerLoaded] = useState(false);
 
+  // Auto-rotate through available news items every 5 seconds
   useEffect(() => {
     if (news.length === 0) return;
 
     const interval = setInterval(() => {
+      setBannerLoaded(false);
       setCurrentIndex((prev) => (prev + 1) % news.length);
     }, 5000);
 
@@ -44,12 +39,16 @@ const NewsBanner = () => {
   if (error) return <BannerFallback news={FALLBACK_NEWS} />;
 
   return (
-    <section className="relative w-full h-[70vh] min-h-125 overflow-hidden">
+    <section aria-label="Featured news banner" className="relative w-full h-[70vh] min-h-125 overflow-hidden bg-gray-800">
+      {!bannerLoaded && (
+        <div className="absolute inset-0 bg-gray-800 animate-pulse" />
+      )}
       <img
         src={featured.imageUrl}
         alt={featured.title}
         loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover"
+        onLoad={() => setBannerLoaded(true)}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${bannerLoaded ? "opacity-100" : "opacity-0"}`}
       />
 
       <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />

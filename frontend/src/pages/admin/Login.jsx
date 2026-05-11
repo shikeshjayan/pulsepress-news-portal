@@ -1,3 +1,5 @@
+// Login form — used both as a modal (from Navbar) and a standalone page (/login)
+// Supports "Remember Me" via localStorage for convenience
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { loginSchema } from "../../validation/authSchema";
@@ -8,6 +10,7 @@ import { AuthContext } from "../../context/AuthContext";
 const Login = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  // Redirect to the page the user was trying to visit before login (if any), or /admin by default
   const from = location.state?.from || null;
   const { login, isAuthenticated } = useContext(AuthContext);
 
@@ -104,11 +107,13 @@ const Login = ({ isOpen, onClose }) => {
               {...register("password")}
               className="border border-gray-300 rounded w-full px-3 py-2 pr-14"
             />
-            <span
+            <button
+              type="button"
               onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
               className="absolute right-3 top-2 text-sm text-gray-500 cursor-pointer">
               {showPassword ? "Hide" : "Show"}
-            </span>
+            </button>
           </div>
           {errors.password && (
             <p className="text-red-500 text-sm mt-1">

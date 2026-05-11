@@ -71,6 +71,7 @@ const newsSchema = new mongoose.Schema(
   },
 );
 
+// Auto-generate a URL-friendly slug from the title before each validation
 newsSchema.pre("validate", function () {
   if (this.title) {
     this.slug = this.title
@@ -80,6 +81,7 @@ newsSchema.pre("validate", function () {
   }
 });
 
+// Full-text search index on title, summary, and content for potential search features
 newsSchema.index({
   title: "text",
   summary: "text",

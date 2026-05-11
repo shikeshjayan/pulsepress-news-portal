@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 
+// Verify JWT token before accessing protected routes — extracts userId and role into req.user
 const authMiddleware = (req, res, next) => {
   try {
     const token = req.cookies?.token || req.headers?.authorization?.replace("Bearer ", "");

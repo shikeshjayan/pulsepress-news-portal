@@ -1,16 +1,8 @@
+// Latest news grid — shows the 6 most recent published articles with image lazy-loading
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNews } from "../../../hooks/useNews";
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import { formatDate } from "../../../utils/formatDate";
 
 const GridSkeleton = () => (
   <section className="max-w-7xl mx-auto px-4 py-12">
@@ -31,11 +23,12 @@ const GridSkeleton = () => (
 
 const NewsGrid = () => {
   const { news, loading, error } = useNews();
+  const [loadedImages, setLoadedImages] = useState(() => new Set());
 
   if (loading) return <GridSkeleton />;
   if (error)
     return (
-      <section className="max-w-7xl mx-auto px-4 py-12">
+    <section aria-label="Latest news" className="max-w-7xl mx-auto px-4 py-12">
         <p className="text-center text-red-500">Failed to load news.</p>
       </section>
     );
@@ -62,12 +55,18 @@ const NewsGrid = () => {
               key={article.slug}
               to={`/news/${article.slug}`}
               className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-48 overflow-hidden bg-gray-200">
+                {!loadedImages.has(article.imageUrl) && (
+                  <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                )}
                 <img
                   src={article.imageUrl}
                   alt={article.title}
                   loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onLoad={() =>
+                    setLoadedImages((prev) => new Set(prev).add(article.imageUrl))
+                  }
+                  className={`w-full h-full object-cover group-hover:scale-105 transition-opacity duration-300 ${loadedImages.has(article.imageUrl) ? "opacity-100" : "opacity-0"}`}
                 />
                 <span className="absolute top-3 left-3 px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-red-600 text-white rounded-full">
                   {article.category}

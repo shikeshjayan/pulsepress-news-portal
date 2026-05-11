@@ -6,6 +6,7 @@ import App from "./App.jsx";
 
 import NewsProvider from "./context/NewsContext.jsx";
 
+// Entry point — wraps the app with Router, global News context, and StrictMode
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>

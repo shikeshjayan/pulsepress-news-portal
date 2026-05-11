@@ -1,3 +1,4 @@
+// Admin layout with a collapsible sidebar (hidden on mobile by default) and a content outlet
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/admin/Sidebar";

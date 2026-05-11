@@ -4,11 +4,12 @@ import {
   deleteNews,
   adminGetAllNews,
   updateNews,
-} from "../../controllers/admin/admin.news.controller.js";
-import authMiddleware from "../../middlewares/auth.middleware.js";
-import adminMiddleware from "../../middlewares/admin.middleware.js";
+} from "../../controllers/admin/news.controller.js";
+import authMiddleware from "../../middleware/auth.middleware.js";
+import adminMiddleware from "../../middleware/admin.middleware.js";
 const router = express.Router();
 
+// All admin routes require both JWT authentication AND admin role
 const adminAuth = [authMiddleware, adminMiddleware];
 
 router.post("/", adminAuth, createNews);

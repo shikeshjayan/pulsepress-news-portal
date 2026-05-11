@@ -1,7 +1,9 @@
+// Main site navigation — renders category links and auth-aware Login/Admin buttons
 import { useState, useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Login from "../pages/admin/Login";
+import LogoutConfirmModal from "../components/LogoutConfirmModal";
 
 const categories = [
   "general",
@@ -19,9 +21,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
     await logout();
+    setShowLogoutModal(false);
     setMenuOpen(false);
     navigate("/");
   };
@@ -70,12 +74,7 @@ const Navbar = () => {
                   className="px-3 py-2 rounded-md text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors">
                   {user?.name || "Admin"}
                 </Link>
-                {/* <span className="text-sm text-gray-500">{user?.name}</span> */}
-                {/* <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors">
-                  Logout
-                </button> */}
+
               </div>
             ) : (
               <button
@@ -88,13 +87,15 @@ const Navbar = () => {
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
             className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100">
             {menuOpen ? (
               <svg
                 className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24">
+                viewBox="0 0 24 24"
+                aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -107,7 +108,8 @@ const Navbar = () => {
                 className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24">
+                viewBox="0 0 24 24"
+                aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -161,7 +163,7 @@ const Navbar = () => {
                 Admin
               </Link>
               <button
-                onClick={handleLogout}
+                onClick={() => setShowLogoutModal(true)}
                 className="block w-full px-4 py-2 rounded-md text-base font-medium text-center text-white bg-red-600 hover:bg-red-700">
                 Logout
               </button>
@@ -182,6 +184,12 @@ const Navbar = () => {
         <Login
           isOpen={loginModalOpen}
           onClose={() => setLoginModalOpen(false)}
+        />
+      )}
+      {showLogoutModal && (
+        <LogoutConfirmModal
+          onConfirm={handleLogout}
+          onCancel={() => setShowLogoutModal(false)}
         />
       )}
     </nav>

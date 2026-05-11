@@ -10,23 +10,24 @@ import Login from "../pages/admin/Login";
 import Dashboard from "../pages/admin/Dashboard";
 import CreateNews from "../pages/admin/CreateNews";
 import Profile from "../pages/admin/Profile";
-import LogoutConfirmModal from "../utils/LogoutConfirmModal";
-import Stats from "../utils/Stats";
 import AllNews from "../pages/admin/AllNews";
-import Pagination from "../utils/Pagination";
+import NotFound from "../pages/public/NotFound";
 
+// Route architecture:
+//   / (MainLayout) — public pages with Navbar + Footer
+//   /login — standalone login page
+//   /admin (ProtectedRoute > AdminLayout) — admin CMS, requires auth
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
-        <Route path="category/:id" element={<Category />} />
+        <Route path="category/:category" element={<Category />} />
         <Route path="news/:slug" element={<SingleNews />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="/login" element={<Login isOpen={true} />} />
-      <Route path="/logout" element={<LogoutConfirmModal />} />
-      <Route path="/stats" element={<Stats />} />
-      <Route path="/pagination" element={<Pagination />} />
+
       <Route
         path="/admin"
         element={

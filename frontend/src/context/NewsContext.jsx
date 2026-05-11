@@ -1,3 +1,4 @@
+// Fetches all published news once at the app level — consumed by banner, grid, category pages
 import { createContext, useEffect, useState } from "react";
 import { fetchNews } from "../services/news.service";
 
@@ -8,14 +9,15 @@ const NewsProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // AbortController cancels the fetch if the component unmounts (e.g., fast navigation)
     const controller = new AbortController();
-    fetchNews()
+    fetchNews({ signal: controller.signal })
       .then((data) => {
         setNews(data);
         setError(null);
       })
       .catch((err) => {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
           console.error("Failed to load news for banner:", err);
           setError("Failed to load news");
         }

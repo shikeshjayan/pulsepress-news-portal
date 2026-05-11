@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Establish MongoDB connection via Mongoose — exit if it fails (no DB, no service)
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL);

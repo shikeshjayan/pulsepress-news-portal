@@ -1,6 +1,7 @@
 import News from "../../models/News.model.js";
-import asyncHandler from "../../middlewares/asyncHandler.js";
-// Create News
+import asyncHandler from "../../middleware/asyncHandler.js";
+
+// ADMIN: Create a news article with duplicate-title check
 export const createNews = asyncHandler(async (req, res) => {
   const {
     title,
@@ -23,6 +24,7 @@ export const createNews = asyncHandler(async (req, res) => {
       .status(400)
       .json({ success: false, message: "News with this title already exists" });
   }
+  // Set publishedAt timestamp immediately when status is "published"
   let publishedAt = null;
   if (status === "published") {
     publishedAt = new Date();
@@ -38,20 +40,40 @@ export const createNews = asyncHandler(async (req, res) => {
     publishedAt,
     author,
   });
-  res
-    .status(201)
-    .json({ success: true, message: "News created successfully", data: news.toObject() });
+  res.status(201).json({
+    success: true,
+    message: "News created successfully",
+    data: news.toObject(),
+  });
 });
-// Admin Get All News
+
+// ADMIN: Return all news (any status), with optional ?status= filter
 export const adminGetAllNews = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit) || 0;
-  const newsList = await News.find()
+  const filter = {};
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
+  const newsList = await News.find(filter)
     .sort({ createdAt: -1 })
     .limit(limit)
     .lean();
   res.status(200).json({ success: true, data: newsList });
 });
-//  Update News
+
+// ADMIN: Filter news by a specific status value
+export const filterNewsByStatus = asyncHandler(async (req, res) => {
+  const { status } = req.query;
+  if (!status) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Status query parameter is required" });
+  }
+  const newsList = await News.find({ status }).sort({ createdAt: -1 }).lean();
+  res.status(200).json({ success: true, data: newsList });
+});
+
+// ADMIN: Update a news article — Object.assign merges req.body onto the Mongoose doc before save
 export const updateNews = asyncHandler(async (req, res) => {
   const news = await News.findById(req.params.id);
   if (!news) {
@@ -59,11 +81,14 @@ export const updateNews = asyncHandler(async (req, res) => {
   }
   Object.assign(news, req.body);
   const updated = await news.save();
-  res
-    .status(200)
-    .json({ success: true, message: "News updated successfully", data: updated.toObject() });
+  res.status(200).json({
+    success: true,
+    message: "News updated successfully",
+    data: updated.toObject(),
+  });
 });
-//  Delete News
+
+// ADMIN: Delete a news article by its _id
 export const deleteNews = asyncHandler(async (req, res) => {
   const newsId = req.params.id;
   const news = await News.findByIdAndDelete(newsId);

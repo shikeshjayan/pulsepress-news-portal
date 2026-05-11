@@ -1,23 +1,16 @@
+// Full article view — fetches a single news item by slug
+// Follows the app-wide data-fetching pattern: loading → error/not_found → data render
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchNewsBySlug } from "../../services/news.service";
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import { formatDate } from "../../utils/formatDate";
 
 const SingleNews = () => {
   const { slug } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -33,8 +26,8 @@ const SingleNews = () => {
 
         setArticle(res.data);
       } catch (err) {
-        // Ignore abort errors
-        if (err.name === "AbortError") return;
+        // Ignore abort errors (component unmounted or navigation)
+        if (err.name === "AbortError" || err.name === "CanceledError") return;
 
         setError(
           err.response?.status === 404
@@ -74,12 +67,16 @@ const SingleNews = () => {
 
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
-      <div className="relative w-full h-105 rounded-xl overflow-hidden mb-8">
+      <div className="relative w-full h-105 rounded-xl overflow-hidden mb-8 bg-gray-200">
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+        )}
         <img
           src={article.imageUrl}
           alt={article.title}
           loading="lazy"
-          className="w-full h-full object-cover"
+          onLoad={() => setImageLoaded(true)}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
         <span className="absolute bottom-4 left-4 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider bg-red-600 text-white rounded-full">

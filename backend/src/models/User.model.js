@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true, select: false }, // Excluded from queries by default; must use .select("+password") explicitly
     role: { type: String, enum: ["admin"], default: "admin" },
   },
   { timestamps: true },

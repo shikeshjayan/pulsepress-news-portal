@@ -1,6 +1,7 @@
+// Admin dashboard — greeting message and news statistics cards
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import Stats from "../../utils/Stats";
+import Stats from "../../components/Stats";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
