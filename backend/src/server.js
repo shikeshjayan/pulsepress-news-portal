@@ -16,6 +16,14 @@ import adminNewsRoutes from "./routes/admin/news.routes.js";
 
 const app = express();
 
+// Chrome 130+ Private Network Access: required when a secure (HTTPS)
+// frontend fetches from a loopback (localhost) backend.
+// Must be set BEFORE cors so the header is present on preflight (OPTIONS) responses.
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Private-Network", "true");
+  next();
+});
+
 // Allow credentials (cookies) from the Vite dev server origin
 app.use(
   cors({
