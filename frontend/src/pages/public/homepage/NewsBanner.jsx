@@ -39,7 +39,9 @@ const NewsBanner = () => {
   if (error) return <BannerFallback news={FALLBACK_NEWS} />;
 
   return (
-    <section aria-label="Featured news banner" className="relative w-full h-[70vh] min-h-125 overflow-hidden bg-gray-800">
+    <section
+      aria-label="Featured news banner"
+      className="relative w-full h-[70vh] min-h-125 overflow-hidden bg-gray-800">
       {!bannerLoaded && (
         <div className="absolute inset-0 bg-gray-800 animate-pulse" />
       )}
@@ -92,6 +94,9 @@ const BannerFallback = ({ news }) => (
       alt={news.title}
       loading="lazy"
       className="absolute inset-0 w-full h-full object-cover"
+      onError={(e) => {
+        e.target.src = "https://placehold.co/600x400";
+      }}
     />
     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
     <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 max-w-5xl mx-auto">
